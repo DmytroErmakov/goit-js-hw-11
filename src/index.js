@@ -1,7 +1,7 @@
 // Описаний в документації
-// import SimpleLightbox from 'simplelightbox';
+import SimpleLightbox from 'simplelightbox';
 // Додатковий імпорт стилів
-// import 'simplelightbox/dist/simple-lightbox.min.css';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const axios = require('axios').default;
 
@@ -111,6 +111,7 @@ function createMarkup({
 }
 
 function updateNewsList(markup) {
+  
   refs.gallery.insertAdjacentHTML('beforeend', markup);
 }
 
