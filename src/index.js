@@ -11,6 +11,9 @@ import NewsService from './API.js';
 
 import LoadMoreBtn from './components/LoadMoreBtn.js';
 
+const modalLightboxGallery = new SimpleLightbox('.gallery a', {
+  captionDelay: 250,
+});
 
 const refs = {
   searchForm: document.getElementById('search-form'),
@@ -19,6 +22,8 @@ const refs = {
   gallery: document.querySelector('.gallery'),
   loadMoreBtn: document.querySelector('.load-more'),
 };
+
+
 
 const newsService = new NewsService();
 const loadMoreBtn = new LoadMoreBtn({
@@ -39,9 +44,12 @@ function onSubmit(event) {
     newsService.searchQuery = value;
     newsService.resetPage();
 
+    
     loadMoreBtn.show();
+   
     clearNewsList();
     fetchArticles().finally(() => form.reset());
+   
   }
 }
 
@@ -64,7 +72,7 @@ async function getArticlesMarkup() {
     Notiflix.Notify.success(`"Hooray! We found ${articles.totalHits} images.`);
     const base = articles.hits;
 
-    if (!base) {
+        if (!base) {
       loadMoreBtn.hide();
       return Notiflix.Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
@@ -92,6 +100,7 @@ function createMarkup({
 }) {
   return `
   <div class="photo-card">
+  <a class="photo-card-link" href="${largeImageURL}">
   <img src="${webformatURL}" class="image" alt="${tags}" loading="lazy" />
   <div class="info">
     <p class="info-item">
@@ -111,17 +120,20 @@ function createMarkup({
 }
 
 function updateNewsList(markup) {
-  
+
   refs.gallery.insertAdjacentHTML('beforeend', markup);
+  modalLightboxGallery.refresh();
 }
 
 function clearNewsList() {
   refs.gallery.innerHTML = '';
+ 
 }
 
 function onError(err) {
   loadMoreBtn.hide();
   refs.gallery.innerHTML = '<p>Not found!</p>';
+ 
 }
 
 function handleScroll() {
@@ -133,3 +145,6 @@ function handleScroll() {
 }
 
 window.addEventListener('scroll', handleScroll);
+
+
+
