@@ -13,7 +13,7 @@ export default class NewsService {
       `${URL}?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`
     );
     this.incrementPage();
-    console.log(data.data);
+    // console.log(data.data);
     return data.data;
   }
 

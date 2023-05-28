@@ -11,6 +11,8 @@ import NewsService from './API.js';
 
 import LoadMoreBtn from './components/LoadMoreBtn.js';
 
+import debounce from 'lodash.debounce';
+
 const modalLightboxGallery = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
 });
@@ -44,26 +46,25 @@ function onSubmit(event) {
     newsService.searchQuery = value;
     newsService.resetPage();
 
-    
     loadMoreBtn.show();
-   
+
     clearNewsList();
     fetchArticles().finally(() => form.reset());
-   
   }
 }
 
 async function fetchArticles() {
-  loadMoreBtn.disable();
+  // loadMoreBtn.disable();
   try {
     const markup = await getArticlesMarkup();
+    
     if (!markup) throw new Error(data);
     updateNewsList(markup);
+    
   } catch (err) {
     onError(err);
   }
-
-  loadMoreBtn.enable();
+ 
 }
 
 async function getArticlesMarkup() {
@@ -71,18 +72,19 @@ async function getArticlesMarkup() {
     const articles = await newsService.getNews();
     Notiflix.Notify.success(`"Hooray! We found ${articles.totalHits} images.`);
     const base = articles.hits;
-
-        if (!base) {
-      loadMoreBtn.hide();
-      return Notiflix.Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
-      );
-    }
+    
+    if (!base) {
+         loadMoreBtn.hide();
+         return Notiflix.Notify.failure(
+           'Sorry, there are no images matching your search query. Please try again.'
+         );
+       }
     if (base.length === 0) throw new Error(data);
 
     return base.reduce((markup, article) => markup + createMarkup(article), '');
   } catch (err) {
     onError(err);
+    loadMoreBtn.hide();
     return Notiflix.Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
     );
@@ -132,19 +134,27 @@ function clearNewsList() {
 
 function onError(err) {
   loadMoreBtn.hide();
-  refs.gallery.innerHTML = '<p>Not found!</p>';
+  // refs.gallery.innerHTML = '<p>Not found!</p>';
  
 }
 
-function handleScroll() {
-  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+// function handleScroll() {
+//   const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
 
-  if (scrollTop + clientHeight >= scrollHeight - 5) {
-    fetchArticles();
-  }
-}
-
-window.addEventListener('scroll', handleScroll);
+//   if (scrollTop + clientHeight >= scrollHeight - 5) {
+//     fetchArticles();
+//   }
+// }
 
 
 
+// function handleScroll() {
+//   const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+
+//   if (scrollTop + clientHeight >= scrollHeight - 2) {
+//     fetchArticles();
+//   }
+// }
+
+
+// window.addEventListener('scroll', handleScroll);
