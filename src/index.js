@@ -42,7 +42,8 @@ function onSubmit(event) {
   const value = form.elements.searchQuery.value.trim();
 
   if (value === '') alert('No value!');
-  else {
+    
+    else {
     newsService.searchQuery = value;
     newsService.resetPage();
 
@@ -54,7 +55,8 @@ function onSubmit(event) {
 }
 
 async function fetchArticles() {
-  // loadMoreBtn.disable();
+
+  loadMoreBtn.hide();
   try {
     const markup = await getArticlesMarkup();
     
@@ -70,13 +72,24 @@ async function fetchArticles() {
 async function getArticlesMarkup() {
   try {
     const articles = await newsService.getNews();
-    Notiflix.Notify.success(`"Hooray! We found ${articles.totalHits} images.`);
+    const totalPages = Math.ceil(articles.totalHits / 40);
+    console.log(totalPages);
+    console.log(articles.totalHits);
+    let page = 1;
+    if (page !== totalPages) {
+            // console.log(page);
+      loadMoreBtn.show();
+    }
+      Notiflix.Notify.success(
+        `"Hooray! We found ${articles.totalHits} images.`
+      );
+   
     const base = articles.hits;
     
     if (!base) {
          loadMoreBtn.hide();
          return Notiflix.Notify.failure(
-           'Sorry, there are no images matching your search query. Please try again.'
+           'Sorry, there are no images matching your search query1. Please try again.'
          );
        }
     if (base.length === 0) throw new Error(data);
@@ -86,7 +99,7 @@ async function getArticlesMarkup() {
     onError(err);
     loadMoreBtn.hide();
     return Notiflix.Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
+      'Sorry, there are no images matching your search query2. Please try again.'
     );
   }
 }
