@@ -33,6 +33,8 @@ const loadMoreBtn = new LoadMoreBtn({
   isHidden: true,
 });
 
+let page = 1;
+
 refs.searchForm.addEventListener('submit', onSubmit);
 loadMoreBtn.button.addEventListener('click', fetchArticles);
 
@@ -70,14 +72,17 @@ async function fetchArticles() {
 }
 
 async function getArticlesMarkup() {
+
+  page += 1;
+  console.log(page);
   try {
     const articles = await newsService.getNews();
     const totalPages = Math.ceil(articles.totalHits / 40);
-    console.log(totalPages);
-    console.log(articles.totalHits);
-    let page = 1;
-    if (page !== totalPages) {
-            // console.log(page);
+    // console.log(totalPages);
+    // console.log(articles.totalHits);
+    
+    if (page - 1 !== totalPages) {
+            console.log(page);
       loadMoreBtn.show();
     }
       Notiflix.Notify.success(
